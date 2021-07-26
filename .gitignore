@@ -1,0 +1,4 @@
+sshc
+config/*.toml
+.vscode
+
