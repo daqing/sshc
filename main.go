@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 	"github.com/melbahja/goph"
@@ -27,9 +29,17 @@ func run(client *goph.Client, cmd string) {
 }
 
 func cp(client *goph.Client, src, dest string) {
+	dest_name := filepath.Base(dest)
+	if !strings.Contains(dest_name, ".") {
+		src_filename := filepath.Base(src)
+
+		dest = strings.TrimRight(dest, "/")
+		dest = strings.Join([]string{dest, src_filename}, "/")
+	}
+
 	err := client.Upload(src, dest)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }
 
