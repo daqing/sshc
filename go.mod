@@ -6,4 +6,5 @@ require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/melbahja/goph v1.2.1
 	github.com/stretchr/testify v1.7.1-0.20210427113832-6241f9ab9942 // indirect
+	golang.org/x/sys v0.0.0-20210510120138-977fb7262007 // indirect
 )

@@ -19,6 +19,7 @@ type HostInfo struct {
 	Password string
 }
 
+// 远程执行命令
 func run(client *goph.Client, cmd string) {
 	out, err := client.Run(cmd)
 	if err != nil {
@@ -29,6 +30,18 @@ func run(client *goph.Client, cmd string) {
 }
 
 func cp(client *goph.Client, src, dest string) {
+	dest = fill_path(src, dest)
+
+	err := client.Upload(src, dest)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+// 如果`dest`是一个目录
+// 把 src 的basename 添加到 dest 上面
+// 形成一个文件路径
+func fill_path(src, dest string) string {
 	dest_name := filepath.Base(dest)
 	if !strings.Contains(dest_name, ".") {
 		src_filename := filepath.Base(src)
@@ -37,13 +50,12 @@ func cp(client *goph.Client, src, dest string) {
 		dest = strings.Join([]string{dest, src_filename}, "/")
 	}
 
-	err := client.Upload(src, dest)
-	if err != nil {
-		log.Fatal(err)
-	}
+	return dest
 }
 
 func down(client *goph.Client, dest, src string) {
+	src = fill_path(dest, src)
+
 	err := client.Download(dest, src)
 	if err != nil {
 		panic(err)
