@@ -120,14 +120,14 @@ func main() {
 		run(client, os.Args[5])
 	case "scp", "cp":
 		if len(os.Args) == 5 {
-			fmt.Printf("usage: %s cp [src] [dest]\n", os.Args[0])
+			fmt.Printf("usage: %s %s [src] [dest]\n", os.Args[0], action)
 			return
 		}
 
 		cp(client, os.Args[5], os.Args[6])
-	case "down":
+	case "dl", "down":
 		if len(os.Args) == 5 {
-			fmt.Printf("usage: %s down [dest] [src]\n", os.Args[0])
+			fmt.Printf("usage: %s %s [dest] [src]\n", os.Args[0], action)
 			return
 		}
 
