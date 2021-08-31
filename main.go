@@ -17,6 +17,7 @@ type HostInfo struct {
 	IP       string
 	User     string
 	Password string
+	Options  map[string]interface{}
 }
 
 // 远程执行命令
@@ -133,6 +134,16 @@ func main() {
 
 		down(client, os.Args[5], os.Args[6])
 	default:
+		if v, ok := hostInfo.Options[action]; ok {
+			if strings.HasPrefix(action, "is_") {
+				fmt.Println(v.(int64) > 0)
+			} else {
+				fmt.Println(v.(string))
+			}
+
+			return
+		}
+
 		log.Fatal("unknown action: " + action)
 	}
 }
