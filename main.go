@@ -22,6 +22,8 @@ type HostInfo struct {
 
 // 远程执行命令
 func run(client *goph.Client, cmd string) {
+	fmt.Printf("\033[0;33m---> running command: [%s]\033[0m\n", cmd)
+
 	out, err := client.Run(cmd)
 	if err != nil {
 		log.Fatal(err)
@@ -142,8 +144,8 @@ func main() {
 			}
 
 			return
+		} else {
+			panic(fmt.Sprintf("No [Options](%s) found\n", action))
 		}
-
-		log.Fatal("unknown action: " + action)
 	}
 }
