@@ -120,7 +120,7 @@ func main() {
 			return
 		}
 
-		run(client, os.Args[5])
+		run(client, strings.Join(os.Args[5:], " "))
 	case "scp", "cp":
 		if len(os.Args) == 5 {
 			fmt.Printf("usage: %s %s [src] [dest]\n", os.Args[0], action)
