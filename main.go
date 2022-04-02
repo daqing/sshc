@@ -135,6 +135,13 @@ func main() {
 		}
 
 		down(client, os.Args[5], os.Args[6])
+	case "pwd":
+		if len(os.Args) == 4 {
+			fmt.Printf("usage: %s %s \n", os.Args[0], action)
+			return
+		}
+
+		fmt.Printf("Password: [%s]\n", hostInfo.Password)
 	default:
 		if v, ok := hostInfo.Options[action]; ok {
 			if strings.HasPrefix(action, "is_") {
