@@ -94,6 +94,12 @@ func main() {
 		log.Fatal(err)
 	}
 
+	action := os.Args[4]
+	if action == "pwd" {
+		fmt.Printf("Password: [%s]\n", hostInfo.Password)
+		return
+	}
+
 	var client *goph.Client
 	var auth goph.Auth
 
@@ -112,7 +118,6 @@ func main() {
 	}
 	defer client.Close()
 
-	action := os.Args[4]
 	switch action {
 	case "run":
 		if len(os.Args) == 5 {
@@ -135,13 +140,6 @@ func main() {
 		}
 
 		down(client, os.Args[5], os.Args[6])
-	case "pwd":
-		if len(os.Args) == 4 {
-			fmt.Printf("usage: %s %s \n", os.Args[0], action)
-			return
-		}
-
-		fmt.Printf("Password: [%s]\n", hostInfo.Password)
 	default:
 		if v, ok := hostInfo.Options[action]; ok {
 			if strings.HasPrefix(action, "is_") {
