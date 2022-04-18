@@ -65,6 +65,12 @@ func down(client *goph.Client, dest, src string) {
 	}
 }
 
+func docker_exec(client *goph.Client, image string, cmd string) {
+	fullCmd := fmt.Sprintf("docker exec -t %s sh -c '%s'", image, cmd)
+
+	run(client, fullCmd)
+}
+
 // sshc -c $HOME/hosts v8os run ls
 // sshc -c $HOME/hosts v8os cp "/tmp/abc.txt" "/tmp/foo.txt"
 // sshc -c $HOME/hosts v8os down "/tmp/foo.txt" "/tmp/demo.txt"
@@ -140,6 +146,19 @@ func main() {
 		}
 
 		down(client, os.Args[5], os.Args[6])
+	case "dk", "docker":
+		if len(os.Args) == 5 {
+			fmt.Printf("usage: %s %s [cmd]\n", os.Args[0], action)
+			return
+		}
+
+		image, valid := hostInfo.Options["image"]
+		if !valid {
+			fmt.Println("no image name configured in host info Options")
+			return
+		}
+
+		docker_exec(client, image.(string), strings.Join(os.Args[5:], " "))
 	default:
 		if v, ok := hostInfo.Options[action]; ok {
 			if strings.HasPrefix(action, "is_") {
