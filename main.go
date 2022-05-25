@@ -9,13 +9,14 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
-	"github.com/melbahja/goph"
+	"github.com/daqing/goph"
 )
 
 type HostInfo struct {
 	Key      string
 	IP       string
 	User     string
+	Port     uint
 	Password string
 	Options  map[string]interface{}
 }
@@ -26,7 +27,7 @@ func run(client *goph.Client, cmd string) {
 
 	out, err := client.Run(cmd)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("run remote cmd error: %s\n", err)
 	}
 
 	fmt.Printf("%s", string(out))
@@ -37,7 +38,7 @@ func cp(client *goph.Client, src, dest string) {
 
 	err := client.Upload(src, dest)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("cp to remote error: src=%s, dest=%s, err=%s\n", src, dest, err)
 	}
 }
 
@@ -61,7 +62,7 @@ func down(client *goph.Client, dest, src string) {
 
 	err := client.Download(dest, src)
 	if err != nil {
-		panic(err)
+		log.Fatalf("download error: dest=%s, src=%s, error=%s\n", dest, src, err)
 	}
 }
 
@@ -91,18 +92,22 @@ func main() {
 
 	content, err := os.ReadFile(fmt.Sprintf("%s/%s.toml", *confDir, host))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("read toml error: %s\n", err)
 	}
 
 	var hostInfo HostInfo
 
 	if _, err := toml.Decode(string(content), &hostInfo); err != nil {
-		log.Fatal(err)
+		log.Fatalf("toml deocode error: %s\n", err)
+	}
+
+	if hostInfo.Port == 0 {
+		hostInfo.Port = 22
 	}
 
 	action := os.Args[4]
 	if action == "pwd" {
-		fmt.Printf("Password: [%s]\n", hostInfo.Password)
+		fmt.Printf("%s\n", hostInfo.Password)
 		return
 	}
 
@@ -112,15 +117,15 @@ func main() {
 	if len(hostInfo.Key) > 0 {
 		auth, err = goph.Key(hostInfo.Key, "")
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("goph.Key error:", err)
 		}
 	} else {
 		auth = goph.Password(hostInfo.Password)
 	}
 
-	client, err = goph.New(hostInfo.User, hostInfo.IP, auth)
+	client, err = goph.New(hostInfo.User, hostInfo.IP, hostInfo.Port, auth)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("goph.New error:", err)
 	}
 	defer client.Close()
 
@@ -169,7 +174,8 @@ func main() {
 
 			return
 		} else {
-			panic(fmt.Sprintf("No [Options](%s) found\n", action))
+			// fallback to run command
+			run(client, strings.Join(os.Args[4:], " "))
 		}
 	}
 }
