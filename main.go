@@ -47,17 +47,25 @@ func cp(client *goph.Client, src, dest string) {
 // 形成一个文件路径
 func fill_path(src, dest string) string {
 	dest_name := filepath.Base(dest)
-	if !strings.Contains(dest_name, ".") {
-		src_filename := filepath.Base(src)
+	src_filename := filepath.Base(src)
 
+	if !strings.Contains(dest_name, ".") {
 		dest = strings.TrimRight(dest, "/")
-		dest = strings.Join([]string{dest, src_filename}, "/")
+	} else if dest == "." || dest == "./" {
+		pwd, err := os.Getwd()
+		if err != nil {
+			panic("Can't get current working directory'")
+		}
+
+		dest = pwd
 	}
 
-	return dest
+	var result = strings.Join([]string{dest, src_filename}, "/")
+
+	return result
 }
 
-func down(client *goph.Client, dest, src string) {
+func download(client *goph.Client, dest, src string) {
 	src = fill_path(dest, src)
 
 	err := client.Download(dest, src)
@@ -137,20 +145,20 @@ func main() {
 		}
 
 		run(client, strings.Join(os.Args[5:], " "))
-	case "scp", "cp":
+	case "cp":
 		if len(os.Args) == 5 {
 			fmt.Printf("usage: %s %s [src] [dest]\n", os.Args[0], action)
 			return
 		}
 
 		cp(client, os.Args[5], os.Args[6])
-	case "dl", "down":
+	case "dl":
 		if len(os.Args) == 5 {
 			fmt.Printf("usage: %s %s [dest] [src]\n", os.Args[0], action)
 			return
 		}
 
-		down(client, os.Args[5], os.Args[6])
+		download(client, os.Args[5], os.Args[6])
 	case "dk", "docker":
 		if len(os.Args) == 5 {
 			fmt.Printf("usage: %s %s [cmd]\n", os.Args[0], action)
