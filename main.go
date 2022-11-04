@@ -18,6 +18,7 @@ type HostInfo struct {
 	User     string
 	Port     uint
 	Password string
+	Note     string
 	Options  map[string]interface{}
 }
 
@@ -116,6 +117,21 @@ func main() {
 	action := os.Args[4]
 	if action == "pwd" {
 		fmt.Printf("%s\n", hostInfo.Password)
+		return
+	}
+
+	if action == "ip" {
+		fmt.Printf("%s\n", hostInfo.IP)
+		return
+	}
+
+	if action == "user" {
+		fmt.Printf("%s\n", hostInfo.User)
+		return
+	}
+
+	if action == "note" {
+		fmt.Printf("%s\n", hostInfo.Note)
 		return
 	}
 
