@@ -86,7 +86,8 @@ func docker_exec(client *goph.Client, image string, cmd string) {
 // sshc -c $HOME/hosts v8os down "/tmp/foo.txt" "/tmp/demo.txt"
 func main() {
 	if len(os.Args) < 5 {
-		fmt.Printf("usage: %s [host] [action] [arg1 arg2 arg3 ...]\n", os.Args[0])
+		fmt.Printf("usage: %s -c [/path/to/conf] [host] [action] [arg1 arg2 arg3 ...]\n", os.Args[0])
+		fmt.Printf("\taction: [password|ip|user|note|run|cp|dl|docker(dk)]")
 		return
 	}
 
@@ -115,7 +116,7 @@ func main() {
 	}
 
 	action := os.Args[4]
-	if action == "pwd" {
+	if action == "password" {
 		fmt.Printf("%s\n", hostInfo.Password)
 		return
 	}
