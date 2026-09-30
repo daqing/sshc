@@ -86,16 +86,20 @@ func docker_exec(client *goph.Client, image string, cmd string) {
 // sshc -c $HOME/hosts v8os down "/tmp/foo.txt" "/tmp/demo.txt"
 func main() {
 	if len(os.Args) < 5 {
-		fmt.Printf("usage: %s -c [/path/to/conf] [host] [action] [arg1 arg2 arg3 ...]\n", os.Args[0])
-		fmt.Printf("\taction: [password|ip|user|note|run|cp|dl|docker(dk)]")
+		fmt.Printf("Usage: %s -d [/path/to/conf/dir] [host] [action] [arg1 arg2 arg3 ...]\n", os.Args[0])
+		fmt.Println("\taction: [password|ip|user|note|run|cp|dl|docker(dk)]")
+		fmt.Println("Example:")
+		fmt.Println("\t" + `sshc -d $HOME/hosts aws run ls`)
+		fmt.Println("\t" + `sshc -d $HOME/hosts vultr cp "/tmp/abc.txt" "/tmp/foo.txt"`)
+		fmt.Println("\t" + `sshc -d $HOME/hosts tencentcloud dl "/tmp/foo.txt" "/tmp/demo.txt""`)
 		return
 	}
 
-	confDir := flag.String("c", "", "config dir to load [host].toml")
+	confDir := flag.String("d", "", "config dir to load [filename].toml")
 	flag.Parse()
 
 	if len(*confDir) == 0 {
-		log.Fatal("Please provide conf dir via -c [path/to/dir]")
+		log.Fatal("Please provide conf dir via -c [path/to/conf/dir]")
 	}
 
 	host := os.Args[3]
